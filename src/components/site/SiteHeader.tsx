@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, X, Languages } from "lucide-react";
+import { Menu, X, Languages, LogIn } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { siteConfig } from "@/config/site";
 
@@ -29,6 +29,12 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
+          <Link
+            to="/admin/login"
+            className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90"
+          >
+            <LogIn className="h-4 w-4" aria-hidden /> Admin
+          </Link>
           <button
             onClick={() => setLang(lang === "ar" ? "fr" : "ar")}
             className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium hover:bg-muted"
@@ -48,6 +54,9 @@ export function SiteHeader() {
               {l.label}
             </Link>
           ))}
+          <Link to="/admin/login" onClick={() => setOpen(false)} className="block py-2 font-medium text-primary">
+            Admin
+          </Link>
         </nav>
       )}
     </header>
