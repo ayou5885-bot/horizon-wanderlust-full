@@ -1,0 +1,258 @@
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+
+export type Lang = "ar" | "fr";
+const STORAGE_KEY = "lang";
+
+const fr = {
+  navHome: "Accueil",
+  navDestinations: "Destinations",
+  navPackages: "Circuits",
+  navHotels: "Hôtels",
+  navTrack: "Suivre ma réservation",
+  switchLang: "العربية",
+  switchLangLabel: "Passer en arabe",
+  heroTitle: "Le monde vous attend, nous vous y emmenons.",
+  heroSubtitle: "Circuits organisés, hôtels sélectionnés et accompagnement humain depuis Alger.",
+  heroCta: "Explorer les circuits",
+  heroCta2: "Voir les destinations",
+  searchPlaceholder: "Où souhaitez-vous partir ?",
+  search: "Rechercher",
+  featuredPackages: "Circuits à la une",
+  featuredHotels: "Hôtels recommandés",
+  ourDestinations: "Nos destinations",
+  viewAll: "Tout voir",
+  trustYears: "15 ans d'expérience",
+  trustYearsDesc: "Des milliers de voyageurs accompagnés.",
+  trustSupport: "Assistance 7j/7",
+  trustSupportDesc: "Une équipe joignable avant et pendant le voyage.",
+  trustPrice: "Prix transparents",
+  trustPriceDesc: "Tout est indiqué en dinars, sans surprise.",
+  trustLocal: "Agence agréée",
+  trustLocalDesc: "Agence de voyage basée en Algérie.",
+  perPerson: "/ personne",
+  perNight: "/ nuit",
+  days: "jours",
+  from: "À partir de",
+  allDestinations: "Toutes les destinations",
+  allCountries: "Tous les pays",
+  destination: "Destination",
+  country: "Pays",
+  maxPrice: "Prix max",
+  duration: "Durée",
+  anyDuration: "Toutes durées",
+  shortTrip: "≤ 5 jours",
+  mediumTrip: "6 – 8 jours",
+  longTrip: "9 jours et +",
+  stars: "Étoiles",
+  anyStars: "Toutes",
+  noResults: "Aucun résultat pour ces filtres.",
+  loading: "Chargement…",
+  notFound: "Introuvable",
+  includes: "Inclus",
+  excludes: "Non inclus",
+  departures: "Départs à venir",
+  noDepartures: "Aucun départ programmé pour le moment.",
+  seatsLeft: "places restantes",
+  fullyBooked: "Complet",
+  departure: "Départ",
+  return: "Retour",
+  price: "Prix",
+  bookingRequest: "Demande de réservation",
+  bookingNotice: "Ceci est une demande de réservation — notre équipe vous contactera pour confirmer la disponibilité et le paiement. Aucun paiement en ligne n'est requis maintenant.",
+  chooseDeparture: "Choisissez un départ ci-dessus",
+  travelers: "Nombre de voyageurs",
+  fullName: "Nom complet",
+  phone: "Téléphone",
+  email: "E-mail",
+  notes: "Remarques (optionnel)",
+  submit: "Envoyer la demande",
+  submitting: "Envoi…",
+  estimatedTotal: "Total estimé",
+  estimateNote: "Estimation uniquement — aucun paiement n'est encaissé.",
+  rooms: "Types de chambres",
+  roomType: "Type de chambre",
+  roomsCount: "Nombre de chambres",
+  guests: "Nombre de voyageurs",
+  checkIn: "Arrivée",
+  checkOut: "Départ",
+  nights: "nuits",
+  capacity: "pers. max",
+  amenities: "Équipements",
+  confirmTitle: "Demande envoyée !",
+  confirmText: "Conservez ce lien pour suivre votre demande :",
+  trackingCode: "Code de suivi",
+  goTrack: "Suivre ma demande",
+  trackTitle: "Suivre ma réservation",
+  trackSubtitle: "Saisissez le numéro de téléphone utilisé et votre code de suivi.",
+  trackButton: "Rechercher",
+  trackNone: "Aucune réservation trouvée avec ces informations.",
+  status: "Statut",
+  status_pending: "En attente",
+  status_confirmed: "Confirmée",
+  status_cancelled: "Annulée",
+  status_completed: "Terminée",
+  type_package: "Circuit",
+  type_hotel: "Hôtel",
+  createdAt: "Envoyée le",
+  contactUs: "Nous contacter",
+  footerAbout: "Votre agence de voyage de confiance pour découvrir le monde en toute sérénité.",
+  hours: "Horaires",
+  address: "Adresse",
+  followUs: "Suivez-nous",
+  whatsapp: "WhatsApp",
+  instagram: "Instagram",
+  facebook: "Facebook",
+  rights: "Tous droits réservés.",
+  errorGeneric: "Une erreur est survenue. Veuillez réessayer.",
+  invalidDates: "La date de départ doit être après la date d'arrivée.",
+  packagesCount: "circuits",
+  hotelsCount: "hôtels",
+  seeOffers: "Voir les offres",
+};
+
+const ar: typeof fr = {
+  navHome: "الرئيسية",
+  navDestinations: "الوجهات",
+  navPackages: "الرحلات",
+  navHotels: "الفنادق",
+  navTrack: "تتبع حجزي",
+  switchLang: "Français",
+  switchLangLabel: "التبديل إلى الفرنسية",
+  heroTitle: "العالم في انتظارك، ونحن نأخذك إليه.",
+  heroSubtitle: "رحلات منظمة، فنادق مختارة ومرافقة إنسانية من الجزائر العاصمة.",
+  heroCta: "استكشف الرحلات",
+  heroCta2: "اكتشف الوجهات",
+  searchPlaceholder: "إلى أين تريد السفر؟",
+  search: "بحث",
+  featuredPackages: "رحلات مميزة",
+  featuredHotels: "فنادق موصى بها",
+  ourDestinations: "وجهاتنا",
+  viewAll: "عرض الكل",
+  trustYears: "15 سنة من الخبرة",
+  trustYearsDesc: "آلاف المسافرين رافقناهم.",
+  trustSupport: "مساعدة 7/7",
+  trustSupportDesc: "فريق متاح قبل الرحلة وأثناءها.",
+  trustPrice: "أسعار واضحة",
+  trustPriceDesc: "كل الأسعار بالدينار الجزائري دون مفاجآت.",
+  trustLocal: "وكالة معتمدة",
+  trustLocalDesc: "وكالة أسفار مقرها في الجزائر.",
+  perPerson: "/ للشخص",
+  perNight: "/ لليلة",
+  days: "أيام",
+  from: "ابتداءً من",
+  allDestinations: "كل الوجهات",
+  allCountries: "كل البلدان",
+  destination: "الوجهة",
+  country: "البلد",
+  maxPrice: "السعر الأقصى",
+  duration: "المدة",
+  anyDuration: "كل المدد",
+  shortTrip: "5 أيام أو أقل",
+  mediumTrip: "6 – 8 أيام",
+  longTrip: "9 أيام فأكثر",
+  stars: "النجوم",
+  anyStars: "الكل",
+  noResults: "لا توجد نتائج لهذه المعايير.",
+  loading: "جارٍ التحميل…",
+  notFound: "غير موجود",
+  includes: "يشمل",
+  excludes: "لا يشمل",
+  departures: "مواعيد الانطلاق القادمة",
+  noDepartures: "لا توجد مواعيد انطلاق حالياً.",
+  seatsLeft: "مقاعد متبقية",
+  fullyBooked: "مكتمل",
+  departure: "الانطلاق",
+  return: "العودة",
+  price: "السعر",
+  bookingRequest: "طلب حجز",
+  bookingNotice: "هذا طلب حجز — سيتصل بك فريقنا لتأكيد التوفر والدفع. لا يلزم أي دفع إلكتروني الآن.",
+  chooseDeparture: "اختر موعد انطلاق أعلاه",
+  travelers: "عدد المسافرين",
+  fullName: "الاسم الكامل",
+  phone: "الهاتف",
+  email: "البريد الإلكتروني",
+  notes: "ملاحظات (اختياري)",
+  submit: "إرسال الطلب",
+  submitting: "جارٍ الإرسال…",
+  estimatedTotal: "المجموع التقديري",
+  estimateNote: "تقدير فقط — لا يتم تحصيل أي مبلغ.",
+  rooms: "أنواع الغرف",
+  roomType: "نوع الغرفة",
+  roomsCount: "عدد الغرف",
+  guests: "عدد النزلاء",
+  checkIn: "تاريخ الوصول",
+  checkOut: "تاريخ المغادرة",
+  nights: "ليالٍ",
+  capacity: "أشخاص كحد أقصى",
+  amenities: "المرافق",
+  confirmTitle: "تم إرسال طلبك!",
+  confirmText: "احتفظ بهذا الرابط لتتبع طلبك:",
+  trackingCode: "رمز التتبع",
+  goTrack: "تتبع طلبي",
+  trackTitle: "تتبع حجزي",
+  trackSubtitle: "أدخل رقم الهاتف المستخدم ورمز التتبع.",
+  trackButton: "بحث",
+  trackNone: "لم يتم العثور على أي حجز بهذه المعلومات.",
+  status: "الحالة",
+  status_pending: "قيد الانتظار",
+  status_confirmed: "مؤكد",
+  status_cancelled: "ملغى",
+  status_completed: "مكتمل",
+  type_package: "رحلة",
+  type_hotel: "فندق",
+  createdAt: "أُرسل في",
+  contactUs: "اتصل بنا",
+  footerAbout: "وكالتك الموثوقة لاكتشاف العالم بكل راحة بال.",
+  hours: "أوقات العمل",
+  address: "العنوان",
+  followUs: "تابعونا",
+  whatsapp: "واتساب",
+  instagram: "إنستغرام",
+  facebook: "فيسبوك",
+  rights: "جميع الحقوق محفوظة.",
+  errorGeneric: "حدث خطأ. يرجى المحاولة مرة أخرى.",
+  invalidDates: "يجب أن يكون تاريخ المغادرة بعد تاريخ الوصول.",
+  packagesCount: "رحلات",
+  hotelsCount: "فنادق",
+  seeOffers: "عرض العروض",
+};
+
+export const translations = { fr, ar };
+export type TKey = keyof typeof fr;
+
+type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (k: TKey) => string; dir: "rtl" | "ltr" };
+const I18nContext = createContext<Ctx | null>(null);
+
+export function I18nProvider({ children }: { children: ReactNode }) {
+  const [lang, setLangState] = useState<Lang>("ar");
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === "ar" || saved === "fr") setLangState(saved);
+  }, []);
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  }, [lang]);
+  const setLang = (l: Lang) => {
+    localStorage.setItem(STORAGE_KEY, l);
+    setLangState(l);
+  };
+  const value: Ctx = { lang, setLang, t: (k) => translations[lang][k], dir: lang === "ar" ? "rtl" : "ltr" };
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+}
+
+export function useI18n() {
+  const ctx = useContext(I18nContext);
+  if (!ctx) throw new Error("useI18n outside provider");
+  return ctx;
+}
+
+export function formatDZD(n: number | null | undefined, lang: Lang = "fr") {
+  const v = Math.round(Number(n ?? 0));
+  return `${v.toLocaleString(lang === "ar" ? "ar-DZ" : "fr-DZ")} ${lang === "ar" ? "د.ج" : "DA"}`;
+}
+
+export function formatDate(d: string | null | undefined, lang: Lang = "fr") {
+  if (!d) return "—";
+  return new Date(d).toLocaleDateString(lang === "ar" ? "ar-DZ" : "fr-FR", { day: "numeric", month: "short", year: "numeric" });
+}
